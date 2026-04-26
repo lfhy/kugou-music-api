@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/lfhy/kugou-music-api/sdk"
+	kg "github.com/lfhy/kugou-music-api"
 )
 
 func main() {
-	client, err := sdk.New()
+	client, err := kg.New()
 	if err != nil {
 		log.Fatalf("init sdk failed: %v", err)
 	}
 
-	resp, err := client.Search(context.Background(), sdk.SearchRequest{
+	resp, err := client.Search(context.Background(), kg.SearchRequest{
 		Keywords: "周杰伦",
 		Page:     1,
 		Pagesize: 10,
