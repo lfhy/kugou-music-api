@@ -1,5 +1,7 @@
 # github.com/lfhy/kugou-music-api (Go SDK)
 
+> 注意：本项目为使用 Codex 基于源项目 [MakcRe/KuGouMusicApi](https://github.com/MakcRe/KuGouMusicApi)（JavaScript 版本）迁移和更新的 Go 版本。由于迁移实现与接口行为可能存在偏差，当前版本可能存在问题，请谨慎使用并自行评估风险。
+
 接口文档入口：
 - 技术清单（路由/方法/模型）：`sdk/API_CATALOG.md`
 - 中文说明清单（自动提取注释）：`sdk/API_CATALOG_ZH.md`
