@@ -1,6 +1,9 @@
 package sdk
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // Youth and yueku compat endpoints stay split out to keep each file small.
 func (c *Client) YouthChannelSong(ctx context.Context, req YouthChannelSongRequest) (*YouthChannelSongResponse, error) {
@@ -58,7 +61,28 @@ func (c *Client) YouthUserSong(ctx context.Context, req YouthUserSongRequest) (*
 }
 
 func (c *Client) YouthVip(ctx context.Context, req YouthVipRequest) (*YouthVipResponse, error) {
-	resp, err := compatCall(ctx, c, RouteYouthVip, "youth_vip", req, req.Cookie, req.Extra)
+	cookies := c.Cookie()
+	for k, v := range req.Cookie {
+		cookies[k] = v
+	}
+	var ok bool
+	cookies, ok = c.ensureLoginValid(ctx, cookies)
+	if !ok {
+		return nil, requireLoginCookie(cookies)
+	}
+
+	nowMS := time.Now().UnixMilli()
+	resp, err := c.Call(ctx, RouteYouthVip, Request{
+		Method: "POST",
+		URL:    "/youth/v1/ad/play_report",
+		Data: map[string]any{
+			"ad_id":      12307537187,
+			"play_end":   nowMS,
+			"play_start": nowMS - 30000,
+		},
+		Cookie:      cookies,
+		EncryptType: "android",
+	})
 	if err != nil {
 		return nil, err
 	}
