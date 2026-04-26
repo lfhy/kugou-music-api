@@ -1,2 +1,6 @@
-subsonic_playlists
-subsonic_server
+/subsonic_playlists
+/subsonic_server
+!/examples/subsonic_playlists/
+!/examples/subsonic_playlists/**
+!/examples/subsonic_server/
+!/examples/subsonic_server/**

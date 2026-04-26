@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lfhy/kugou-music-api/core/config"
 	"github.com/lfhy/kugou-music-api/core/kugou"
 	"github.com/lfhy/kugou-music-api/core/util"
 )
@@ -285,78 +284,4 @@ func (c *Client) finalizeLoginResponse(raw kugou.Response, aesKey string, reqErr
 		return out, reqErr
 	}
 	return out, nil
-}
-
-func dedupSetCookie(input []string) []string {
-	m := map[string]string{}
-	for _, x := range input {
-		x = strings.TrimSpace(x)
-		if x == "" {
-			continue
-		}
-		kv := strings.SplitN(strings.Split(x, ";")[0], "=", 2)
-		if len(kv) != 2 {
-			continue
-		}
-		m[strings.TrimSpace(kv[0])] = strings.TrimSpace(kv[1])
-	}
-	out := make([]string, 0, len(m))
-	for k, v := range m {
-		out = append(out, k+"="+v)
-	}
-	return out
-}
-
-func firstAny(v any, def any) any {
-	if v == nil {
-		return def
-	}
-	s := strings.TrimSpace(fmt.Sprintf("%v", v))
-	if s == "" || s == "<nil>" {
-		return def
-	}
-	return v
-}
-
-func asString(v any) string {
-	s := strings.TrimSpace(fmt.Sprintf("%v", v))
-	if s == "<nil>" {
-		return ""
-	}
-	return s
-}
-
-func asIntString(v any) string {
-	s := strings.TrimSpace(fmt.Sprintf("%v", v))
-	if s == "" || s == "<nil>" {
-		return "0"
-	}
-	if i, err := strconv.ParseInt(s, 10, 64); err == nil {
-		return strconv.FormatInt(i, 10)
-	}
-	if f, err := strconv.ParseFloat(s, 64); err == nil {
-		return strconv.FormatInt(int64(f), 10)
-	}
-	return "0"
-}
-
-func maskMobile(mobile string) string {
-	m := strings.TrimSpace(mobile)
-	if len(m) < 3 {
-		return m
-	}
-	last := m[len(m)-1:]
-	if len(m) >= 2 {
-		return m[:2] + "*****" + last
-	}
-	return m
-}
-
-func signParamsKey(data string, isLite bool) string {
-	appid, clientver := config.PlatformConfig(isLite)
-	key := "OIlwieks28dk2k092lksi2UIkp"
-	if isLite {
-		key = "LnT6xpN3khm36zse0QzvmgTZ3waWdRSA"
-	}
-	return util.MD5Hex(appid + key + clientver + data)
 }
