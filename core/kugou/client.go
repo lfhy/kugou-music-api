@@ -159,6 +159,9 @@ func (c *Client) CreateRequest(ctx context.Context, cfg RequestConfig) (Response
 	if cfg.Data != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
+	if cookieHeader := buildCookieHeader(cfg.Cookie); cookieHeader != "" {
+		req.Header.Set("Cookie", cookieHeader)
+	}
 
 	mergeHeader(req.Header, cfg.Headers)
 	mergeHeader(req.Header, headers)
@@ -223,6 +226,25 @@ func mergeHeader(h http.Header, m map[string]string) {
 	for k, v := range m {
 		h.Set(k, v)
 	}
+}
+
+func buildCookieHeader(cookie map[string]string) string {
+	if len(cookie) == 0 {
+		return ""
+	}
+	keys := make([]string, 0, len(cookie))
+	for k, v := range cookie {
+		if strings.TrimSpace(k) == "" || strings.TrimSpace(v) == "" {
+			continue
+		}
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	parts := make([]string, 0, len(keys))
+	for _, k := range keys {
+		parts = append(parts, k+"="+cookie[k])
+	}
+	return strings.Join(parts, "; ")
 }
 
 func stringify(v any) string {

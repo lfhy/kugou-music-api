@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"os"
 	"time"
 
@@ -29,19 +28,38 @@ func main() {
 		os.Exit(1)
 	}
 
-	key := pickStringDeep(keyResp.Body, "qrcode", "key", "qrkey")
+	key := keyResp.QRCodeKey()
 	if key == "" {
 		fmt.Printf("未从响应中提取到二维码 key: %s\n", string(keyResp.RawBody))
 		os.Exit(1)
 	}
 
-	qrURL := "https://h5.kugou.com/apps/loginQRCode/html/index.html?qrcode=" + url.QueryEscape(key)
+	qrCreateResp, err := client.LoginQrCreate(ctx, sdk.LoginQrCreateRequest{Key: key, Qrimg: true})
+	if err != nil {
+		fmt.Printf("生成二维码信息失败: %v\n", err)
+		os.Exit(1)
+	}
+	qrURL := qrCreateResp.URL()
+	if qrURL == "" {
+		qrURL = keyResp.QRCodeURL()
+	}
+	qrPNGPath, saveErr := saveQRCodePNG(key, qrCreateResp.Base64())
+	if saveErr != nil {
+		fmt.Printf("保存二维码 PNG 失败: %v\n", saveErr)
+	}
 	fmt.Println("请使用酷狗 App 扫码登录：")
+	renderTerminalQRCode(qrURL)
+	if qrPNGPath != "" {
+		fmt.Println("本地二维码 PNG：")
+		fmt.Println(qrPNGPath)
+	}
+	fmt.Println("二维码地址：")
 	fmt.Println(qrURL)
 	fmt.Println("轮询登录状态中（最多 120 秒）...")
 
 	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
+	lastStatus := -999
 
 	for {
 		select {
@@ -55,7 +73,11 @@ func main() {
 				continue
 			}
 
-			status := pickIntDeep(checkResp.Body, "status")
+			status := checkResp.StatusCode()
+			if status == lastStatus && (status == 1 || status == 2) {
+				continue
+			}
+			lastStatus = status
 			switch status {
 			case 0:
 				fmt.Println("二维码已过期，请重新运行。")
@@ -65,8 +87,8 @@ func main() {
 			case 2:
 				fmt.Println("已扫码，等待确认...")
 			case 4:
-				token := pickStringDeep(checkResp.Body, "token")
-				userid := pickStringDeep(checkResp.Body, "userid", "user_id", "uid")
+				token := checkResp.Token()
+				userid := checkResp.UserID()
 				if token != "" {
 					client.SetCookie("token", token)
 				}
@@ -92,48 +114,4 @@ func main() {
 			}
 		}
 	}
-}
-
-func pickStringDeep(v any, keys ...string) string {
-	m, ok := v.(map[string]any)
-	if !ok || m == nil {
-		return ""
-	}
-	for _, k := range keys {
-		if x, ok := m[k]; ok {
-			s := fmt.Sprintf("%v", x)
-			if s != "" && s != "<nil>" {
-				return s
-			}
-		}
-	}
-	for _, x := range m {
-		if mm, ok := x.(map[string]any); ok {
-			if s := pickStringDeep(mm, keys...); s != "" {
-				return s
-			}
-		}
-	}
-	return ""
-}
-
-func pickIntDeep(v any, key string) int {
-	m, ok := v.(map[string]any)
-	if !ok || m == nil {
-		return -1
-	}
-	if x, ok := m[key]; ok {
-		var n int
-		fmt.Sscanf(fmt.Sprintf("%v", x), "%d", &n)
-		return n
-	}
-	for _, x := range m {
-		if mm, ok := x.(map[string]any); ok {
-			n := pickIntDeep(mm, key)
-			if n != -1 {
-				return n
-			}
-		}
-	}
-	return -1
 }

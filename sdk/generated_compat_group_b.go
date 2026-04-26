@@ -179,6 +179,31 @@ func buildCompatParamsGroupB(identifier string, in map[string]any, cookie map[st
 			}
 		}
 		return out, true
+	case "login_qr_check":
+		out := map[string]any{}
+		out["plat"] = 4
+		out["appid"] = 3116
+		out["srcappid"] = 2919
+		out["qrcode"] = in["key"]
+		for k, v := range in {
+			if _, ok := out[k]; !ok {
+				out[k] = v
+			}
+		}
+		return out, true
+	case "login_qr_key":
+		out := map[string]any{}
+		out["appid"] = ternaryInt(compatFirstAnyString(in["type"], "") == "web", 1014, 1001)
+		out["type"] = 1
+		out["plat"] = 4
+		out["qrcode_txt"] = "https://h5.kugou.com/apps/loginQRCode/html/index.html?appid=3116&"
+		out["srcappid"] = 2919
+		for k, v := range in {
+			if _, ok := out[k]; !ok {
+				out[k] = v
+			}
+		}
+		return out, true
 	case "login_token":
 		out := map[string]any{}
 		out["plat"] = 1

@@ -58,4 +58,3 @@ func isBizSuccessCode(resp *Response) bool {
 	}
 	return errorCode == "" || errorCode == "<nil>" || errorCode == "0" || errorCode == "0.0"
 }
-

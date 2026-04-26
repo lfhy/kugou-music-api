@@ -12,6 +12,11 @@ import (
 	"github.com/lfhy/kugou-music-api/core/util"
 )
 
+type tokenSignature struct {
+	ClientTime int64  `json:"clienttime"`
+	Token      string `json:"token"`
+}
+
 // User listening and video metadata endpoints keep their signature logic here.
 func (c *Client) UserCloudUrl(ctx context.Context, req UserCloudUrlRequest) (*UserCloudUrlResponse, error) {
 	params := structToMap(req)
@@ -65,7 +70,10 @@ func (c *Client) UserFollow(ctx context.Context, req UserFollowRequest) (*UserFo
 	if c.isLite {
 		pub = kugou.PublicLiteRASKey
 	}
-	p, err := kugou.CryptoRSAEncryptRawHex(map[string]any{"clienttime": dateTime, "token": token}, pub)
+	p, err := kugou.CryptoRSAEncryptRawHex(tokenSignature{
+		ClientTime: dateTime,
+		Token:      token,
+	}, pub)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +108,10 @@ func (c *Client) UserListen(ctx context.Context, req UserListenRequest) (*UserLi
 	if c.isLite {
 		pub = kugou.PublicLiteRASKey
 	}
-	p, err := kugou.CryptoRSAEncryptRawHex(map[string]any{"clienttime": clienttime, "token": token}, pub)
+	p, err := kugou.CryptoRSAEncryptRawHex(tokenSignature{
+		ClientTime: clienttime,
+		Token:      token,
+	}, pub)
 	if err != nil {
 		return nil, err
 	}

@@ -122,7 +122,7 @@ type LoginQrCheckRequest struct {
 	Extra  map[string]any    `json:"-"`
 }
 
-type LoginQrCheckResponse = Response
+type LoginQrCheckResponse Response
 
 func (c *Client) LoginQrCheck(ctx context.Context, req LoginQrCheckRequest) (*LoginQrCheckResponse, error) {
 	params := structToMap(req)
@@ -139,8 +139,7 @@ func (c *Client) LoginQrCheck(ctx context.Context, req LoginQrCheckRequest) (*Lo
 	if err != nil {
 		return nil, err
 	}
-	out := LoginQrCheckResponse(*resp)
-	return &out, nil
+	return finalizeLoginQrCheckResponse(c, resp), nil
 }
 
 type LoginQrCreateRequest struct {
@@ -150,23 +149,8 @@ type LoginQrCreateRequest struct {
 	Extra  map[string]any    `json:"-"`
 }
 
-type LoginQrCreateResponse = Response
+type LoginQrCreateResponse Response
 
 func (c *Client) LoginQrCreate(ctx context.Context, req LoginQrCreateRequest) (*LoginQrCreateResponse, error) {
-	params := structToMap(req)
-	delete(params, "Cookie")
-	delete(params, "Extra")
-	if compat, ok := buildCompatParams("login_qr_create", params, req.Cookie); ok {
-		params = compat
-	}
-	for k, v := range req.Extra {
-		params[k] = v
-	}
-	cookie := applyCompatCookie("login_qr_create", req.Cookie)
-	resp, err := c.Call(ctx, RouteLoginQrCreate, Request{Params: params, Cookie: cookie})
-	if err != nil {
-		return nil, err
-	}
-	out := LoginQrCreateResponse(*resp)
-	return &out, nil
+	return buildLoginQrCreateResponse(req)
 }

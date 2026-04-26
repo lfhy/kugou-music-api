@@ -49,6 +49,24 @@ type TokenLoginRequest struct {
 	Cookie map[string]string
 }
 
+type loginPKPayload struct {
+	ClientTimeMS int64  `json:"clienttime_ms"`
+	Key          string `json:"key"`
+}
+
+type tokenRefreshPayload struct {
+	Dfid         string `json:"dfid"`
+	P3           string `json:"p3"`
+	Plat         int    `json:"plat"`
+	T1           int    `json:"t1"`
+	T2           int    `json:"t2"`
+	T3           string `json:"t3"`
+	PK           string `json:"pk"`
+	Params       string `json:"params"`
+	UserID       string `json:"userid"`
+	ClientTimeMS int64  `json:"clienttime_ms"`
+}
+
 func (c *Client) LoginByPassword(ctx context.Context, req PasswordLoginRequest) (*Response, error) {
 	cookies := c.Cookie()
 	for k, v := range req.Cookie {
@@ -69,7 +87,10 @@ func (c *Client) LoginByPassword(ctx context.Context, req PasswordLoginRequest) 
 	if c.isLite {
 		pubKey = kugou.PublicLiteRASKey
 	}
-	pk, err := kugou.CryptoRSAEncryptRawHex(map[string]any{"clienttime_ms": nowMs, "key": encrypt.Key}, pubKey)
+	pk, err := kugou.CryptoRSAEncryptRawHex(loginPKPayload{
+		ClientTimeMS: nowMs,
+		Key:          encrypt.Key,
+	}, pubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +136,10 @@ func (c *Client) LoginByCellphone(ctx context.Context, req CellphoneLoginRequest
 	if c.isLite {
 		pubKey = kugou.PublicLiteRASKey
 	}
-	pk, err := kugou.CryptoRSAEncryptRawHex(map[string]any{"clienttime_ms": nowMs, "key": encrypt.Key}, pubKey)
+	pk, err := kugou.CryptoRSAEncryptRawHex(loginPKPayload{
+		ClientTimeMS: nowMs,
+		Key:          encrypt.Key,
+	}, pubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -192,43 +216,37 @@ func (c *Client) LoginByToken(ctx context.Context, req TokenLoginRequest) (*Resp
 	if c.isLite {
 		pubKey = kugou.PublicLiteRASKey
 	}
-	pk, err := kugou.CryptoRSAEncryptRawHex(map[string]any{"clienttime_ms": nowMs, "key": encryptParams.Key}, pubKey)
+	pk, err := kugou.CryptoRSAEncryptRawHex(loginPKPayload{
+		ClientTimeMS: nowMs,
+		Key:          encryptParams.Key,
+	}, pubKey)
 	if err != nil {
 		return nil, err
 	}
 
-	t2, _ := kugou.CryptoAesEncrypt(fmt.Sprintf("%s|0f607264fc6318a92b9e13c65db7cd3c|%s|%s|%d", cookies["KUGOU_API_GUID"], cookies["KUGOU_API_MAC"], cookies["KUGOU_API_DEV"], nowMs), &kugou.AesOpt{Key: liteT2Key, IV: liteT2Iv})
-	t1Source := fmt.Sprintf("|%d", nowMs)
-	if cookies["t1"] != "" {
-		t1Source = fmt.Sprintf("%s|%d", cookies["t1"], nowMs)
-	}
-	t1, _ := kugou.CryptoAesEncrypt(t1Source, &kugou.AesOpt{Key: liteT1Key, IV: liteT1Iv})
-
-	data := map[string]any{
-		"dfid":          firstNonEmpty(cookies["dfid"], "-"),
-		"p3":            p3.Str,
-		"plat":          1,
-		"t1":            0,
-		"t2":            0,
-		"t3":            loginT3,
-		"pk":            pk,
-		"params":        encryptParams.Str,
-		"userid":        userid,
-		"clienttime_ms": nowMs,
-	}
-	if c.isLite {
-		data["t1"] = t1.Str
-		data["t2"] = t2.Str
-		data["dev"] = cookies["KUGOU_API_DEV"]
+	data := tokenRefreshPayload{
+		Dfid:         firstNonEmpty(cookies["dfid"], "-"),
+		P3:           p3.Str,
+		Plat:         1,
+		T1:           0,
+		T2:           0,
+		T3:           loginT3,
+		PK:           pk,
+		Params:       encryptParams.Str,
+		UserID:       userid,
+		ClientTimeMS: nowMs,
 	}
 
 	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
 		Method:      "POST",
 		BaseURL:     "http://login.user.kugou.com",
-		URL:         "/v5/login_by_token",
+		URL:         ternaryString(c.isLite, "/v4/login_by_token", "/v5/login_by_token"),
 		Data:        data,
 		EncryptType: "android",
 		Cookie:      cookies,
+		Headers: map[string]string{
+			"x-router": "login.user.kugou.com",
+		},
 	})
 	return c.finalizeLoginResponse(raw, encryptParams.Key, err)
 }

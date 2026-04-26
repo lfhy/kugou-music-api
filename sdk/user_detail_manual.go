@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -9,6 +10,18 @@ import (
 
 	"github.com/lfhy/kugou-music-api/core/kugou"
 )
+
+type userDetailSignature struct {
+	Token      string `json:"token"`
+	ClientTime int64  `json:"clienttime"`
+}
+
+type userDetailPayload struct {
+	VisitTime int64  `json:"visit_time"`
+	UserType  int    `json:"usertype"`
+	P         string `json:"p"`
+	UserID    int    `json:"userid"`
+}
 
 // UserDetail overrides generated behavior with JS-compatible signing for /user/detail.
 func (c *Client) UserDetail(ctx context.Context, req UserDetailRequest) (*UserDetailResponse, error) {
@@ -53,27 +66,37 @@ func (c *Client) UserDetail(ctx context.Context, req UserDetailRequest) (*UserDe
 	if c.isLite {
 		pubKey = kugou.PublicLiteRASKey
 	}
-	p, err := kugou.CryptoRSAEncryptRawHex(map[string]any{
-		"token":      token,
-		"clienttime": clientTime,
+	p, err := kugou.CryptoRSAEncryptRawHex(userDetailSignature{
+		Token:      token,
+		ClientTime: clientTime,
 	}, pubKey)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.Call(ctx, RouteUserDetail, Request{
-		Params: map[string]any{"plat": 1},
-		Data: map[string]any{
-			"visit_time": clientTime,
-			"usertype":   1,
-			"p":          strings.ToUpper(p),
-			"userid":     userID,
+	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
+		Method:      "POST",
+		URL:         "/v3/get_my_info",
+		Params:      map[string]any{"plat": 1},
+		Data:        userDetailPayload{VisitTime: clientTime, UserType: 1, P: strings.ToUpper(p), UserID: userID},
+		Cookie:      cookies,
+		EncryptType: "android",
+		Headers: map[string]string{
+			"x-router": "usercenter.kugou.com",
 		},
-		Cookie: cookies,
 	})
-	if err != nil {
-		return nil, err
+	if len(raw.Cookie) > 0 {
+		c.updateCookiePool(raw.Cookie)
 	}
-	out := UserDetailResponse(*resp)
+	out := UserDetailResponse{
+		Status:  raw.Status,
+		RawBody: raw.Body,
+		Headers: raw.Headers,
+		Cookie:  raw.Cookie,
+	}
+	if err == nil {
+		out.Body = map[string]any{}
+		_ = json.Unmarshal(raw.Body, &out.Body)
+	}
 	return &out, nil
 }

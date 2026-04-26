@@ -65,6 +65,13 @@ func asIntString(v any) string {
 	return "0"
 }
 
+func ternaryString(ok bool, a, b string) string {
+	if ok {
+		return a
+	}
+	return b
+}
+
 func maskMobile(mobile string) string {
 	mobile = strings.TrimSpace(mobile)
 	if len(mobile) < 7 {

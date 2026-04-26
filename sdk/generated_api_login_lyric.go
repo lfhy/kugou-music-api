@@ -10,7 +10,7 @@ type LoginQrKeyRequest struct {
 	Extra  map[string]any    `json:"-"`
 }
 
-type LoginQrKeyResponse = Response
+type LoginQrKeyResponse Response
 
 func (c *Client) LoginQrKey(ctx context.Context, req LoginQrKeyRequest) (*LoginQrKeyResponse, error) {
 	params := structToMap(req)
