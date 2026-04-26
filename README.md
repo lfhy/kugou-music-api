@@ -4,6 +4,57 @@
 
 > 注意：本项目为使用 Codex 基于源项目 [MakcRe/KuGouMusicApi](https://github.com/MakcRe/KuGouMusicApi)（JavaScript 版本）迁移和更新的 Go 版本。由于迁移实现与接口行为可能存在偏差，当前版本可能存在问题，请谨慎使用并自行评估风险。
 
+## 快速开始
+
+安装：
+
+```bash
+go get github.com/lfhy/kugou-music-api
+```
+
+推荐直接从根包导入：
+
+```go
+import kg "github.com/lfhy/kugou-music-api"
+```
+
+最小示例：
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	kg "github.com/lfhy/kugou-music-api"
+)
+
+func main() {
+	client, err := kg.New()
+	if err != nil {
+		log.Fatalf("init client failed: %v", err)
+	}
+
+	resp, err := client.Search(context.Background(), kg.SearchRequest{
+		Keywords: "周杰伦",
+		Page:     1,
+		Pagesize: 10,
+	})
+	if err != nil {
+		log.Fatalf("search failed: %v", err)
+	}
+
+	fmt.Printf("status: %d\n", resp.Status)
+	fmt.Printf("body: %s\n", string(resp.RawBody))
+}
+```
+
+兼容说明：
+- 推荐新项目直接使用根包 `github.com/lfhy/kugou-music-api`
+- 旧代码仍可继续使用子包 `github.com/lfhy/kugou-music-api/sdk`
+
 接口文档入口：
 - 技术清单（路由/方法/模型）：`sdk/API_CATALOG.md`
 - 中文说明清单（自动提取注释）：`sdk/API_CATALOG_ZH.md`
