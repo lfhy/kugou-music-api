@@ -56,6 +56,20 @@ Compatibility:
 - New projects should import the root package `github.com/lfhy/kugou-music-api`
 - Existing code can continue using `github.com/lfhy/kugou-music-api/sdk`
 
+Session and auto refresh:
+
+- The SDK creates clients with the `lite` platform behavior by default
+- When an API call returns an expired-login response, currently matched mainly by `error_code=20018`, the SDK will try `LoginByToken(...)` with the current `token + userid` and replay the original request once
+- If `token/userid` are missing, or the refresh attempt fails, the SDK returns the error to the caller
+- If you want to manage session refresh yourself, disable it explicitly:
+
+```go
+client, err := kg.New(
+    kg.WithCookie(cookie),
+    kg.WithAutoRefresh(false),
+)
+```
+
 ## API Documentation
 
 - Technical catalog (routes/methods/models): `sdk/API_CATALOG.md`

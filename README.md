@@ -55,6 +55,19 @@ func main() {
 - 推荐新项目直接使用根包 `github.com/lfhy/kugou-music-api`
 - 旧代码仍可继续使用子包 `github.com/lfhy/kugou-music-api/sdk`
 
+会话与自动刷新：
+- SDK 默认使用 `lite` 平台参数构造客户端
+- 当接口返回登录态失效（当前主要按 `error_code=20018` 判断）时，SDK 会自动尝试使用当前 `token + userid` 调用 `LoginByToken(...)` 刷新，并自动重试一次原请求
+- 如果本地没有可用的 `token/userid`，或者刷新失败，错误会直接返回给调用方，不会静默吞掉
+- 如果你希望完全自行管理会话刷新，可以显式关闭：
+
+```go
+client, err := kg.New(
+    kg.WithCookie(cookie),
+    kg.WithAutoRefresh(false),
+)
+```
+
 接口文档入口：
 - 技术清单（路由/方法/模型）：`sdk/API_CATALOG.md`
 - 中文说明清单（自动提取注释）：`sdk/API_CATALOG_ZH.md`
@@ -239,6 +252,7 @@ func main() {
 | `(*Client).LoginByPassword(...)` | 账号密码登录（含加密与 token 解包） | 登录封装 |
 | `(*Client).LoginByCellphone(...)` | 手机验证码登录（含加密与 token 解包） | 登录封装 |
 | `(*Client).LoginByToken(...)` | token 刷新登录 | 登录封装 |
+| `kg.WithAutoRefresh(bool)` | 控制是否自动刷新过期登录态（默认开启） | 客户端 Option |
 | `(*Client).GetDailyRecommendGuest(...)` | 获取每日推荐（自动 fallback） | 每日推荐封装 |
 | `(*Client).GetSongPlayURL(...)` | 获取歌曲可播放地址（按原 JS 逻辑） | 播放地址封装 |
 | `(*Client).ResolveSongPlayURL(...)` | 获取歌曲地址明细（支持 option） | 播放地址封装 |
