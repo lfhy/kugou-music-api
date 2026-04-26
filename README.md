@@ -1,4 +1,6 @@
-# github.com/lfhy/kugou-music-api (Go SDK)
+# 酷狗音乐Go SDK
+
+中文 | [English](README_EN.md)
 
 > 注意：本项目为使用 Codex 基于源项目 [MakcRe/KuGouMusicApi](https://github.com/MakcRe/KuGouMusicApi)（JavaScript 版本）迁移和更新的 Go 版本。由于迁移实现与接口行为可能存在偏差，当前版本可能存在问题，请谨慎使用并自行评估风险。
 
