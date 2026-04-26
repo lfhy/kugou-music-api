@@ -1446,7 +1446,7 @@ type LyricRequest struct {
 	Extra     map[string]any    `json:"-"`
 }
 
-type LyricResponse = Response
+type LyricResponse Response
 
 type PcDiantaiRequest struct {
 	Userid int               `json:"userid,omitempty"`

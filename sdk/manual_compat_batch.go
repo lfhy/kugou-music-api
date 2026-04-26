@@ -127,6 +127,9 @@ func (c *Client) Lyric(ctx context.Context, req LyricRequest) (*LyricResponse, e
 		return nil, err
 	}
 	out := LyricResponse(*resp)
+	if toBool(firstAny(params["decode"], req.Decode), false) {
+		_ = out.DecodedContent()
+	}
 	return &out, nil
 }
 
