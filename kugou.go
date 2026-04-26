@@ -20,6 +20,10 @@ func WithCookie(cookie map[string]string) Option {
 	return sdk.WithCookie(cookie)
 }
 
+func WithAutoRefresh(enabled bool) Option {
+	return sdk.WithAutoRefresh(enabled)
+}
+
 func WithSongURLFallback(enabled bool) SongPlayURLOption {
 	return sdk.WithSongURLFallback(enabled)
 }

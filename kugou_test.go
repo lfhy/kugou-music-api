@@ -8,7 +8,11 @@ import (
 )
 
 func TestRootPackageFacade(t *testing.T) {
-	client, err := kg.New(kg.WithLite(true), kg.WithCookie(map[string]string{"token": "test-token"}))
+	client, err := kg.New(
+		kg.WithLite(true),
+		kg.WithAutoRefresh(false),
+		kg.WithCookie(map[string]string{"token": "test-token"}),
+	)
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}

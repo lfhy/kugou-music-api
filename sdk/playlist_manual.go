@@ -19,7 +19,7 @@ func (c *Client) PlaylistAdd(ctx context.Context, req PlaylistAddRequest) (*Play
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if ok == false {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	name := strings.TrimSpace(fmt.Sprintf("%v", firstAny(req.Name, "")))
@@ -30,7 +30,7 @@ func (c *Client) PlaylistAdd(ctx context.Context, req PlaylistAddRequest) (*Play
 	userid := firstNonEmpty(strings.TrimSpace(cookies["userid"]), strings.TrimSpace(fmt.Sprintf("%v", req.Userid)), "0")
 	token := firstNonEmpty(strings.TrimSpace(cookies["token"]), strings.TrimSpace(fmt.Sprintf("%v", req.Token)), "")
 	if userid == "0" || token == "" {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	clienttime := time.Now().Unix()
@@ -91,13 +91,13 @@ func (c *Client) PlaylistTracksAdd(ctx context.Context, req PlaylistTracksAddReq
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if ok == false {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	userid := firstNonEmpty(strings.TrimSpace(cookies["userid"]), strings.TrimSpace(fmt.Sprintf("%v", req.Userid)), "0")
 	token := firstNonEmpty(strings.TrimSpace(cookies["token"]), strings.TrimSpace(fmt.Sprintf("%v", req.Token)), "")
 	if userid == "0" || token == "" {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	listid := toInt(firstAny(req.Listid, 0), 0)
@@ -184,13 +184,13 @@ func (c *Client) PlaylistTracksDel(ctx context.Context, req PlaylistTracksDelReq
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if ok == false {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	userid := firstNonEmpty(strings.TrimSpace(cookies["userid"]), strings.TrimSpace(fmt.Sprintf("%v", req.Userid)), "0")
 	token := firstNonEmpty(strings.TrimSpace(cookies["token"]), strings.TrimSpace(fmt.Sprintf("%v", req.Token)), "")
 	if userid == "0" || token == "" {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	listid := toInt(firstAny(req.Listid, 0), 0)
@@ -235,7 +235,7 @@ func (c *Client) PlaylistTracksDel(ctx context.Context, req PlaylistTracksDelReq
 }
 
 func (c *Client) callManual(ctx context.Context, cfg kugou.RequestConfig) (*Response, error) {
-	raw, err := c.core.CreateRequest(ctx, cfg)
+	raw, err := c.doRequest(ctx, cfg)
 	if len(raw.Cookie) > 0 {
 		c.updateCookiePool(raw.Cookie)
 	}

@@ -37,7 +37,7 @@ func compatCallRequireLogin(ctx context.Context, c *Client, route, identifier st
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params, mergedCookie := compatRequest(req, identifier, cookies, extra)
 	resp, err := c.Call(ctx, route, Request{Params: params, Cookie: mergedCookie})

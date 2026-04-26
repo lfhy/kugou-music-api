@@ -29,7 +29,7 @@ func (c *Client) SendCaptcha(ctx context.Context, req SendCaptchaRequest) (*Resp
 		reqCookie["KUGOU_API_MID"] = mid
 	}
 
-	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
+	raw, err := c.doRequest(ctx, kugou.RequestConfig{
 		Method:      "POST",
 		BaseURL:     "http://login.user.kugou.com",
 		URL:         "/v7/send_mobile_code",

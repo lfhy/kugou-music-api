@@ -25,11 +25,25 @@ type userDetailPayload struct {
 
 // UserDetail overrides generated behavior with JS-compatible signing for /user/detail.
 func (c *Client) UserDetail(ctx context.Context, req UserDetailRequest) (*UserDetailResponse, error) {
-	cookies := c.Cookie()
-	for k, v := range req.Cookie {
-		cookies[k] = v
-	}
+	return c.userDetail(ctx, req, false)
+}
 
+func (c *Client) userDetail(ctx context.Context, req UserDetailRequest, retried bool) (*UserDetailResponse, error) {
+	resp, err := c.userDetailOnce(ctx, req)
+	if !isAuthExpiredResponse(resp) {
+		return resp, err
+	}
+	if retried {
+		return resp, wrapLoginResponseError(RouteUserDetail, resp, c.loginStateError(c.mergeRequestCookies(req.Cookie, false)))
+	}
+	if refreshErr := c.tryAutoRefresh(ctx, c.mergeRequestCookies(req.Cookie, false)); refreshErr != nil {
+		return resp, wrapLoginResponseError(RouteUserDetail, resp, refreshErr)
+	}
+	return c.userDetail(ctx, c.prepareUserDetailRetryRequest(req, c.Cookie()), true)
+}
+
+func (c *Client) userDetailOnce(ctx context.Context, req UserDetailRequest) (*UserDetailResponse, error) {
+	cookies := c.mergeRequestCookies(req.Cookie, false)
 	for k, v := range req.Extra {
 		if sv, ok := v.(string); ok {
 			cookies[k] = sv
@@ -74,7 +88,7 @@ func (c *Client) UserDetail(ctx context.Context, req UserDetailRequest) (*UserDe
 		return nil, err
 	}
 
-	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
+	raw, err := c.doRequest(ctx, kugou.RequestConfig{
 		Method:      "POST",
 		URL:         "/v3/get_my_info",
 		Params:      map[string]any{"plat": 1},
@@ -99,4 +113,21 @@ func (c *Client) UserDetail(ctx context.Context, req UserDetailRequest) (*UserDe
 		_ = json.Unmarshal(raw.Body, &out.Body)
 	}
 	return &out, nil
+}
+
+func (c *Client) prepareUserDetailRetryRequest(req UserDetailRequest, refreshed map[string]string) UserDetailRequest {
+	retry := req
+	retry.Cookie = mergeRetryCookies(req.Cookie, refreshed)
+	retry.Token = refreshed["token"]
+	retry.Userid = toInt(refreshed["userid"], req.Userid)
+	if len(req.Extra) > 0 {
+		retry.Extra = make(map[string]any, len(req.Extra))
+		for k, v := range req.Extra {
+			retry.Extra[k] = v
+		}
+		if retry.Userid > 0 {
+			retry.Extra["userid"] = retry.Userid
+		}
+	}
+	return retry
 }

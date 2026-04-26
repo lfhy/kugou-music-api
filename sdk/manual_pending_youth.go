@@ -14,7 +14,7 @@ func (c *Client) UserVipDetail(ctx context.Context, req UserVipDetailRequest) (*
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	resp, err := c.Call(ctx, RouteUserVipDetail, Request{
 		Method:  "GET",
@@ -146,7 +146,7 @@ func (c *Client) YouthChannelSub(ctx context.Context, req YouthChannelSubRequest
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")
@@ -186,7 +186,7 @@ func (c *Client) YouthDayVip(ctx context.Context, req YouthDayVipRequest) (*Yout
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")
@@ -219,7 +219,7 @@ func (c *Client) YouthDynamic(ctx context.Context, req YouthDynamicRequest) (*Yo
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	resp, err := c.Call(ctx, RouteYouthDynamic, Request{
 		Method:      "GET",
@@ -242,7 +242,7 @@ func (c *Client) YouthDynamicRecent(ctx context.Context, req YouthDynamicRecentR
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	resp, err := c.Call(ctx, RouteYouthDynamicRecent, Request{
 		Method:      "GET",
@@ -265,7 +265,7 @@ func (c *Client) YouthMonthVipRecord(ctx context.Context, req YouthMonthVipRecor
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	resp, err := c.Call(ctx, RouteYouthMonthVipRecord, Request{
 		Method: "GET",

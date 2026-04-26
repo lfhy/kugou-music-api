@@ -2,14 +2,14 @@ package sdk
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"os"
 	"strings"
 
 	"github.com/lfhy/kugou-music-api/core/kugou"
 	"github.com/lfhy/kugou-music-api/core/util"
 )
+
+type requestExecutor func(context.Context, kugou.RequestConfig) (kugou.Response, error)
 
 type Option func(*Client)
 
@@ -38,11 +38,13 @@ type Response struct {
 }
 
 type Client struct {
-	core       *kugou.Client
-	isLite     bool
-	cookiePool map[string]string
-	guid       string
-	serverDev  string
+	core        *kugou.Client
+	requester   requestExecutor
+	isLite      bool
+	autoRefresh bool
+	cookiePool  map[string]string
+	guid        string
+	serverDev   string
 }
 
 func WithLite(v bool) Option {
@@ -57,19 +59,26 @@ func WithCookie(cookie map[string]string) Option {
 	}
 }
 
+// WithAutoRefresh controls whether the SDK should try token refresh on 20018-style auth failures.
+func WithAutoRefresh(enabled bool) Option {
+	return func(c *Client) { c.autoRefresh = enabled }
+}
+
 func New(opts ...Option) (*Client, error) {
 	platform := strings.ToLower(strings.TrimSpace(os.Getenv("platform")))
 	c := &Client{
-		isLite:     defaultLitePlatform(platform),
-		cookiePool: map[string]string{},
-		guid:       util.MD5Hex(util.RandomString(16)),
-		serverDev:  strings.ToUpper(util.RandomString(10)),
+		isLite:      defaultLitePlatform(platform),
+		autoRefresh: true,
+		cookiePool:  map[string]string{},
+		guid:        util.MD5Hex(util.RandomString(16)),
+		serverDev:   strings.ToUpper(util.RandomString(10)),
 	}
 	for _, opt := range opts {
 		opt(c)
 	}
 
 	c.core = kugou.NewClient(c.isLite)
+	c.requester = c.core.CreateRequest
 	c.injectPlatformCookies()
 	return c, nil
 }
@@ -99,74 +108,11 @@ func (c *Client) Cookie() map[string]string {
 	return out
 }
 
-func (c *Client) Call(ctx context.Context, route string, req Request) (*Response, error) {
-	sp, ok := apiSpecMap[route]
-	if !ok {
-		return nil, errors.New("route not found: " + route)
+func (c *Client) doRequest(ctx context.Context, cfg kugou.RequestConfig) (kugou.Response, error) {
+	if c.requester != nil {
+		return c.requester(ctx, cfg)
 	}
-	return c.callSpec(ctx, sp, req)
-}
-
-func (c *Client) CallByIdentifier(ctx context.Context, identifier string, req Request) (*Response, error) {
-	for route, sp := range apiSpecMap {
-		if sp.Identifier == identifier {
-			return c.callSpec(ctx, apiSpecMap[route], req)
-		}
-	}
-	return nil, errors.New("identifier not found: " + identifier)
-}
-
-func (c *Client) callSpec(ctx context.Context, sp apiSpec, req Request) (*Response, error) {
-	cookies := c.Cookie()
-	for k, v := range req.Cookie {
-		cookies[k] = v
-	}
-
-	cfg := kugou.RequestConfig{
-		Method:             firstNonEmpty(req.Method, sp.Method),
-		URL:                fallbackURL(firstNonEmpty(req.URL, sp.URL)),
-		BaseURL:            firstNonEmpty(req.BaseURL, sp.BaseURL),
-		Headers:            mergeHeaders(sp.Headers, req.Headers),
-		EncryptType:        firstNonEmpty(req.EncryptType, sp.EncryptType),
-		Cookie:             cookies,
-		EncryptKey:         chooseBool(req.EncryptKey, sp.EncryptKey),
-		ClearDefaultParams: chooseBool(req.ClearDefaultParams, sp.ClearDefaultParams),
-		NotSignature:       chooseBool(req.NotSignature, sp.NotSignature),
-	}
-
-	args := map[string]any{}
-	mergeAny(args, req.Params)
-	mergeAny(args, req.Data)
-
-	switch {
-	case sp.UseParams && sp.UseData:
-		cfg.Params = args
-		if len(req.Data) > 0 {
-			cfg.Data = req.Data
-		} else {
-			cfg.Data = args
-		}
-	case sp.UseData:
-		if len(req.Data) > 0 {
-			cfg.Data = req.Data
-		} else {
-			cfg.Data = args
-		}
-	default:
-		cfg.Params = args
-	}
-
-	raw, err := c.core.CreateRequest(ctx, cfg)
-	if len(raw.Cookie) > 0 {
-		c.updateCookiePool(raw.Cookie)
-	}
-
-	out := &Response{Status: raw.Status, RawBody: raw.Body, Headers: raw.Headers, Cookie: raw.Cookie}
-	var body map[string]any
-	if json.Unmarshal(raw.Body, &body) == nil {
-		out.Body = body
-	}
-	return out, err
+	return c.core.CreateRequest(ctx, cfg)
 }
 
 func (c *Client) updateCookiePool(setCookies []string) {
@@ -213,44 +159,4 @@ func defaultLitePlatform(platform string) bool {
 	default:
 		return true
 	}
-}
-
-func mergeAny(dst, src map[string]any) {
-	for k, v := range src {
-		dst[k] = v
-	}
-}
-
-func mergeHeaders(base, extra map[string]string) map[string]string {
-	out := make(map[string]string, len(base)+len(extra))
-	for k, v := range base {
-		out[k] = v
-	}
-	for k, v := range extra {
-		out[k] = v
-	}
-	return out
-}
-
-func firstNonEmpty(v ...string) string {
-	for _, x := range v {
-		if strings.TrimSpace(x) != "" {
-			return x
-		}
-	}
-	return ""
-}
-
-func fallbackURL(u string) string {
-	if strings.Contains(u, "${") || strings.TrimSpace(u) == "" {
-		return "/"
-	}
-	return u
-}
-
-func chooseBool(input *bool, def bool) bool {
-	if input == nil {
-		return def
-	}
-	return *input
 }

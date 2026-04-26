@@ -81,7 +81,7 @@ func (c *Client) ArtistFollowNewsongs(ctx context.Context, req ArtistFollowNewso
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")

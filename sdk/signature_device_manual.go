@@ -18,7 +18,7 @@ func (c *Client) RegisterDev(ctx context.Context, req RegisterDevRequest) (*Regi
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")
@@ -79,7 +79,7 @@ func (c *Client) RegisterDev(ctx context.Context, req RegisterDevRequest) (*Regi
 		return nil, err
 	}
 
-	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
+	raw, err := c.doRequest(ctx, kugou.RequestConfig{
 		Method:      "POST",
 		BaseURL:     "https://userservice.kugou.com",
 		URL:         "/risk/v2/r_register_dev",
@@ -122,7 +122,7 @@ func (c *Client) UserVideoCollect(ctx context.Context, req UserVideoCollectReque
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")
@@ -163,7 +163,7 @@ func (c *Client) UserVideoLove(ctx context.Context, req UserVideoLoveRequest) (*
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")

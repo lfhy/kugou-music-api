@@ -50,7 +50,7 @@ func (c *Client) PlaylistDel(ctx context.Context, req PlaylistDelRequest) (*Play
 		"last_time":  clienttime,
 		"p":          strings.ToUpper(p),
 	}
-	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
+	raw, err := c.doRequest(ctx, kugou.RequestConfig{
 		Method:      "POST",
 		URL:         "/v2/delete_list",
 		BaseURL:     "",
@@ -225,7 +225,7 @@ func (c *Client) UserCloud(ctx context.Context, req UserCloudRequest) (*UserClou
 		"p":          strings.ToUpper(p),
 	}
 	dataRaw, _ := base64.StdEncoding.DecodeString(aesData.CipherBase64)
-	raw, err := c.core.CreateRequest(ctx, kugou.RequestConfig{
+	raw, err := c.doRequest(ctx, kugou.RequestConfig{
 		Method:             "POST",
 		BaseURL:            "https://mcloudservice.kugou.com",
 		URL:                "/v1/get_list",

@@ -142,7 +142,7 @@ func (c *Client) Brush(ctx context.Context, req BrushRequest) (*BrushResponse, e
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 	params := structToMap(req)
 	delete(params, "Cookie")

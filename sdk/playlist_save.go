@@ -31,7 +31,7 @@ func (c *Client) CreatePlaylist(ctx context.Context, name string, isPrivate bool
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	respRaw, err := c.PlaylistAdd(ctx, PlaylistAddRequest{
@@ -71,7 +71,7 @@ func (c *Client) AddTracksToPlaylist(ctx context.Context, listID int, tracks []R
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	seen := map[string]struct{}{}

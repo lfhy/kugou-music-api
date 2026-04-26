@@ -68,7 +68,7 @@ func (c *Client) YouthVip(ctx context.Context, req YouthVipRequest) (*YouthVipRe
 	var ok bool
 	cookies, ok = c.ensureLoginValid(ctx, cookies)
 	if !ok {
-		return nil, requireLoginCookie(cookies)
+		return nil, c.loginStateError(cookies)
 	}
 
 	nowMS := time.Now().UnixMilli()
