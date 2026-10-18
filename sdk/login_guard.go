@@ -22,7 +22,10 @@ func (c *Client) ensureLoginValid(ctx context.Context, cookie map[string]string)
 
 	resp, err := c.userDetailOnce(ctx, UserDetailRequest{Cookie: merged})
 	if err == nil && isBizSuccessCode(resp) {
-		return c.Cookie(), true
+		// 返回实际用于校验的 cookie（client 池 + 本次请求传入），而不是 client 池。
+		// 与 JS 版一致：调用方只通过请求参数传登录态时，token / userid 不能在
+		// 校验后被丢掉，否则后续请求会退化成未登录态。
+		return merged, true
 	}
 	// Callers that disable automatic refresh must not trigger a refresh
 	// indirectly through an authenticated helper method. Returning the

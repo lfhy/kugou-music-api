@@ -6,9 +6,13 @@ import (
 	"strings"
 )
 
-// GetDailyRecommendGuest fetches daily recommend list for guest mode.
-// It first calls EverydayRecommend, and if business code 200103 is returned,
-// it falls back to RecommendSongs(platform=android, userid=0).
+// GetDailyRecommendGuest fetches the daily recommend list.
+//
+// It first calls EverydayRecommend with the given cookie (login state is used
+// when present). If business code 200103 is returned, it falls back to
+// RecommendSongs(platform=android, userid=<cookie userid>), matching the JS
+// client's recommend_songs module; without a userid in the cookie it uses "0"
+// and returns guest recommendations.
 func (c *Client) GetDailyRecommendGuest(ctx context.Context, cookie map[string]string) (*Response, error) {
 	effective := map[string]string{}
 	for k, v := range cookie {
@@ -32,9 +36,13 @@ func (c *Client) GetDailyRecommendGuest(ctx context.Context, cookie map[string]s
 	}
 
 	if isBizCode(resp, "200103") {
+		userid := strings.TrimSpace(effective["userid"])
+		if userid == "" {
+			userid = "0"
+		}
 		return c.RecommendSongs(ctx, RecommendSongsRequest{
 			Platform: "android",
-			Userid:   "0",
+			Userid:   userid,
 			Cookie:   effective,
 		})
 	}
