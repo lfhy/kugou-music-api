@@ -71,25 +71,6 @@ type PlaylistDetailRequest struct {
 
 type PlaylistDetailResponse = Response
 
-func (c *Client) PlaylistDetail(ctx context.Context, req PlaylistDetailRequest) (*PlaylistDetailResponse, error) {
-	params := structToMap(req)
-	delete(params, "Cookie")
-	delete(params, "Extra")
-	if compat, ok := buildCompatParams("playlist_detail", params, req.Cookie); ok {
-		params = compat
-	}
-	for k, v := range req.Extra {
-		params[k] = v
-	}
-	cookie := applyCompatCookie("playlist_detail", req.Cookie)
-	resp, err := c.Call(ctx, RoutePlaylistDetail, Request{Params: params, Cookie: cookie})
-	if err != nil {
-		return nil, err
-	}
-	out := PlaylistDetailResponse(*resp)
-	return &out, nil
-}
-
 type PlaylistEffectRequest struct {
 	Page     int               `json:"page,omitempty"`
 	Pagesize int               `json:"pagesize,omitempty"`

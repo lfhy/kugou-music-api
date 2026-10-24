@@ -55,6 +55,7 @@ var manualSkipIdentifiers = map[string]bool{
 	"personal_fm":               true,
 	"playlist_del":              true,
 	"playlist_add":              true,
+	"playlist_detail":           true,
 	"playlist_tracks_add":       true,
 	"playlist_tracks_del":       true,
 	"playlist_similar":          true,
