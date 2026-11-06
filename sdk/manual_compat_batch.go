@@ -48,7 +48,25 @@ func compatCallRequireLogin(ctx context.Context, c *Client, route, identifier st
 }
 
 func (c *Client) AlbumSongs(ctx context.Context, req AlbumSongsRequest) (*AlbumSongsResponse, error) {
-	resp, err := compatCall(ctx, c, RouteAlbumSongs, "album_songs", req, req.Cookie, req.Extra)
+	params := structToMap(req)
+	delete(params, "Cookie")
+	delete(params, "Extra")
+	for k, v := range req.Extra {
+		params[k] = v
+	}
+	resp, err := c.Call(ctx, RouteAlbumSongs, Request{
+		Method: "POST",
+		URL:    "/v1/album_audio/lite",
+		Data: map[string]any{
+			"album_id": firstAny(params["album_id"], params["id"]),
+			"is_buy":   compatFirstAnyString(params["is_buy"], ""),
+			"page":     toInt(firstAny(params["page"], nil), 1),
+			"pagesize": toInt(firstAny(params["pagesize"], nil), 30),
+		},
+		Cookie:      req.Cookie,
+		EncryptType: "android",
+		Headers:     map[string]string{"x-router": "openapi.kugou.com", "kg-tid": "255"},
+	})
 	if err != nil {
 		return nil, err
 	}
