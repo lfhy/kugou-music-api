@@ -66,6 +66,8 @@ func goType(t fieldType) string {
 		return "int"
 	case tBool:
 		return "bool"
+	case tBytes:
+		return "[]byte"
 	default:
 		return "any"
 	}

@@ -72,12 +72,15 @@
 | `playlist_del` | `/playlist/del` | `POST` | `PlaylistDelRequest` | `PlaylistDelResponse` |
 | `playlist_detail` | `/playlist/detail` | `POST` | `PlaylistDetailRequest` | `PlaylistDetailResponse` |
 | `playlist_effect` | `/playlist/effect` | `POST` | `PlaylistEffectRequest` | `PlaylistEffectResponse` |
+| `playlist_pic` | `/playlist/pic` | `POST` | `PlaylistPicRequest` | `PlaylistPicResponse` |
+| `playlist_pic_upload` | `/playlist/pic/upload` | `POST` | `PlaylistUploadRequest` | `PlaylistUploadResponse` |
 | `playlist_similar` | `/playlist/similar` | `POST` | `PlaylistSimilarRequest` | `PlaylistSimilarResponse` |
 | `playlist_tags` | `/playlist/tags` | `POST` | `PlaylistTagsRequest` | `PlaylistTagsResponse` |
 | `playlist_track_all` | `/playlist/track/all` | `GET` | `PlaylistTrackAllRequest` | `PlaylistTrackAllResponse` |
 | `playlist_track_all_new` | `/playlist/track/all/new` | `POST` | `PlaylistTrackAllNewRequest` | `PlaylistTrackAllNewResponse` |
 | `playlist_tracks_add` | `/playlist/tracks/add` | `POST` | `PlaylistTracksAddRequest` | `PlaylistTracksAddResponse` |
 | `playlist_tracks_del` | `/playlist/tracks/del` | `POST` | `PlaylistTracksDelRequest` | `PlaylistTracksDelResponse` |
+| `playlist_update` | `/playlist/update` | `POST` | `PlaylistUpdateRequest` | `PlaylistUpdateResponse` |
 | `privilege_lite` | `/privilege/lite` | `POST` | `PrivilegeLiteRequest` | `PrivilegeLiteResponse` |
 | `rank_audio` | `/rank/audio` | `POST` | `RankAudioRequest` | `RankAudioResponse` |
 | `rank_info` | `/rank/info` | `GET` | `RankInfoRequest` | `RankInfoResponse` |

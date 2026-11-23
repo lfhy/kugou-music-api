@@ -155,12 +155,15 @@ client, err := kg.New(
 | `playlist_del` | `/playlist/del` | `POST` | `PlaylistDelRequest` | `PlaylistDelResponse` |
 | `playlist_detail` | `/playlist/detail` | `POST` | `PlaylistDetailRequest` | `PlaylistDetailResponse` |
 | `playlist_effect` | `/playlist/effect` | `POST` | `PlaylistEffectRequest` | `PlaylistEffectResponse` |
+| `playlist_pic` | `/playlist/pic` | `POST` | `PlaylistPicRequest` | `PlaylistPicResponse` |
+| `playlist_pic_upload` | `/playlist/pic/upload` | `POST` | `PlaylistUploadRequest` | `PlaylistUploadResponse` |
 | `playlist_similar` | `/playlist/similar` | `POST` | `PlaylistSimilarRequest` | `PlaylistSimilarResponse` |
 | `playlist_tags` | `/playlist/tags` | `POST` | `PlaylistTagsRequest` | `PlaylistTagsResponse` |
 | `playlist_track_all` | `/playlist/track/all` | `GET` | `PlaylistTrackAllRequest` | `PlaylistTrackAllResponse` |
 | `playlist_track_all_new` | `/playlist/track/all/new` | `POST` | `PlaylistTrackAllNewRequest` | `PlaylistTrackAllNewResponse` |
 | `playlist_tracks_add` | `/playlist/tracks/add` | `POST` | `PlaylistTracksAddRequest` | `PlaylistTracksAddResponse` |
 | `playlist_tracks_del` | `/playlist/tracks/del` | `POST` | `PlaylistTracksDelRequest` | `PlaylistTracksDelResponse` |
+| `playlist_update` | `/playlist/update` | `POST` | `PlaylistUpdateRequest` | `PlaylistUpdateResponse` |
 | `privilege_lite` | `/privilege/lite` | `POST` | `PrivilegeLiteRequest` | `PrivilegeLiteResponse` |
 | `rank_audio` | `/rank/audio` | `POST` | `RankAudioRequest` | `RankAudioResponse` |
 | `rank_info` | `/rank/info` | `GET` | `RankInfoRequest` | `RankInfoResponse` |
@@ -329,12 +332,15 @@ client, err := kg.New(
 | `(*Client).PlaylistDel(...)` | 取消收藏歌单 | `/playlist/del` |
 | `(*Client).PlaylistDetail(...)` | 获取歌单详情 | `/playlist/detail` |
 | `(*Client).PlaylistEffect(...)` | 获取音效歌单 | `/playlist/effect` |
+| `(*Client).PlaylistPic(...)` | 修改我的歌单封面 | `/playlist/pic` |
+| `(*Client).PlaylistUpload(...)` | 上传歌单自定义封面 | `/playlist/pic/upload` |
 | `(*Client).PlaylistSimilar(...)` | (暂无注释) | `/playlist/similar` |
 | `(*Client).PlaylistTags(...)` | 获取歌单分类 | `/playlist/tags` |
 | `(*Client).PlaylistTrackAll(...)` | 获取歌单所有歌曲 | `/playlist/track/all` |
 | `(*Client).PlaylistTrackAllNew(...)` | 获取歌单所有歌曲 | `/playlist/track/all/new` |
 | `(*Client).PlaylistTracksAdd(...)` | 对歌单添加歌曲 | `/playlist/tracks/add` |
 | `(*Client).PlaylistTracksDel(...)` | 对歌单删除歌曲 | `/playlist/tracks/del` |
+| `(*Client).PlaylistUpdate(...)` | 修改我的歌单信息 | `/playlist/update` |
 | `(*Client).PrivilegeLite(...)` | 获取歌曲信息 | `/privilege/lite` |
 | `(*Client).RankAudio(...)` | 获取排行榜音乐列表 | `/rank/audio` |
 | `(*Client).RankInfo(...)` | 获取排行榜详情 | `/rank/info` |

@@ -117,6 +117,9 @@ func fixStatusForModel(m apiModel) (status, mode, note string) {
 		return "已校对修复", "manual", "手写封装优先"
 	}
 	manualPending := map[string]bool{
+		"playlist_pic":              true,
+		"playlist_pic_upload":       true,
+		"playlist_update":           true,
 		"album_detail":              true,
 		"album_shop":                true,
 		"artist_detail":             true,

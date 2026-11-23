@@ -99,6 +99,27 @@ func (c *Client) PlaylistEffect(ctx context.Context, req PlaylistEffectRequest) 
 	return &out, nil
 }
 
+type PlaylistPicRequest struct {
+	Data     string            `json:"data,omitempty"`
+	TotalVer int               `json:"total_ver,omitempty"`
+	Cookie   map[string]string `json:"-"`
+	Extra    map[string]any    `json:"-"`
+}
+
+type PlaylistPicResponse = Response
+
+type PlaylistUploadRequest struct {
+	Data       []byte            `json:"data,omitempty"`
+	ExtendName string            `json:"extendName,omitempty"`
+	File       string            `json:"file,omitempty"`
+	Md5        string            `json:"md5,omitempty"`
+	Type       string            `json:"type,omitempty"`
+	Cookie     map[string]string `json:"-"`
+	Extra      map[string]any    `json:"-"`
+}
+
+type PlaylistUploadResponse = Response
+
 type PlaylistSimilarRequest struct {
 	Ids    string            `json:"ids,omitempty"`
 	Userid any               `json:"userid,omitempty"`
@@ -177,6 +198,21 @@ type PlaylistTracksDelRequest struct {
 }
 
 type PlaylistTracksDelResponse = Response
+
+type PlaylistUpdateRequest struct {
+	Intro    string            `json:"intro,omitempty"`
+	Listid   int               `json:"listid,omitempty"`
+	Name     string            `json:"name,omitempty"`
+	Pic      string            `json:"pic,omitempty"`
+	Sort     int               `json:"sort,omitempty"`
+	Tags     string            `json:"tags,omitempty"`
+	TotalVer int               `json:"total_ver,omitempty"`
+	Type     int               `json:"type,omitempty"`
+	Cookie   map[string]string `json:"-"`
+	Extra    map[string]any    `json:"-"`
+}
+
+type PlaylistUpdateResponse = Response
 
 type PrivilegeLiteRequest struct {
 	AlbumId string            `json:"album_id,omitempty"`

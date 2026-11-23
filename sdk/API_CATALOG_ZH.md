@@ -72,12 +72,15 @@
 | `playlist_del` | `/playlist/del` | 取消收藏歌单 |
 | `playlist_detail` | `/playlist/detail` | 获取歌单详情 |
 | `playlist_effect` | `/playlist/effect` | 获取音效歌单 |
+| `playlist_pic` | `/playlist/pic` | 修改我的歌单封面 |
+| `playlist_pic_upload` | `/playlist/pic/upload` | 上传歌单自定义封面（PlaylistUpload） |
 | `playlist_similar` | `/playlist/similar` | (暂无注释) |
 | `playlist_tags` | `/playlist/tags` | 获取歌单分类 |
 | `playlist_track_all` | `/playlist/track/all` | 获取歌单所有歌曲 |
 | `playlist_track_all_new` | `/playlist/track/all/new` | 获取歌单所有歌曲 |
 | `playlist_tracks_add` | `/playlist/tracks/add` | 对歌单添加歌曲 |
 | `playlist_tracks_del` | `/playlist/tracks/del` | 对歌单删除歌曲 |
+| `playlist_update` | `/playlist/update` | 修改我的歌单信息 |
 | `privilege_lite` | `/privilege/lite` | 获取歌曲信息 |
 | `rank_audio` | `/rank/audio` | 获取排行榜音乐列表 |
 | `rank_info` | `/rank/info` | 获取排行榜详情 |

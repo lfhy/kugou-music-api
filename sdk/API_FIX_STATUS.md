@@ -74,12 +74,15 @@
 | `playlist_del` | `/playlist/del` | `已校对修复` | `manual` | 手写封装优先 |
 | `playlist_detail` | `/playlist/detail` | `已校对修复` | `auto-compat` | 自动规则 2 条 |
 | `playlist_effect` | `/playlist/effect` | `已校对修复` | `auto-compat` | 自动规则 2 条 |
+| `playlist_pic` | `/playlist/pic` | `待实测` | `manual-pending` | 手写封装已完成，待联调校验 |
+| `playlist_pic_upload` | `/playlist/pic/upload` | `待实测` | `manual-pending` | 手写封装已完成，待联调校验 |
 | `playlist_similar` | `/playlist/similar` | `已校对修复` | `manual` | 手写封装优先 |
 | `playlist_tags` | `/playlist/tags` | `已校对修复` | `auto-compat` | 自动规则 3 条 |
 | `playlist_track_all` | `/playlist/track/all` | `已校对修复` | `manual` | 手写封装优先 |
 | `playlist_track_all_new` | `/playlist/track/all/new` | `已校对修复` | `manual` | 手写封装优先 |
 | `playlist_tracks_add` | `/playlist/tracks/add` | `已校对修复` | `manual` | 手写封装优先 |
 | `playlist_tracks_del` | `/playlist/tracks/del` | `已校对修复` | `manual` | 手写封装优先 |
+| `playlist_update` | `/playlist/update` | `待实测` | `manual-pending` | 手写封装已完成，待联调校验 |
 | `privilege_lite` | `/privilege/lite` | `已校对修复` | `manual` | 手写封装优先 |
 | `rank_audio` | `/rank/audio` | `已校对修复` | `manual` | 手写封装优先 |
 | `rank_info` | `/rank/info` | `待实测` | `manual-pending` | 手写封装已完成，待联调校验 |

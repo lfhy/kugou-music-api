@@ -11,6 +11,7 @@ const (
 	tString
 	tInt
 	tBool
+	tBytes
 )
 
 type apiModel struct {
@@ -55,6 +56,9 @@ var manualSkipIdentifiers = map[string]bool{
 	"personal_fm":               true,
 	"playlist_del":              true,
 	"playlist_add":              true,
+	"playlist_pic":              true,
+	"playlist_pic_upload":       true,
+	"playlist_update":           true,
 	"playlist_detail":           true,
 	"playlist_tracks_add":       true,
 	"playlist_tracks_del":       true,

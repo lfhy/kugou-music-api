@@ -61,6 +61,7 @@ func main() {
 			Compat:     parser.ExtractCompatSpec(sp.Identifier, string(src)),
 			Fields:     extractFields(string(src)),
 		}
+		applyPlaylistModel(&m)
 		m.ReqName = m.Name + "Request"
 		m.RespName = m.Name + "Response"
 		models = append(models, m)

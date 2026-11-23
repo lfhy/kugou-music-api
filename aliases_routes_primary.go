@@ -78,10 +78,13 @@ const (
 	RoutePlaylistDel             = sdk.RoutePlaylistDel
 	RoutePlaylistDetail          = sdk.RoutePlaylistDetail
 	RoutePlaylistEffect          = sdk.RoutePlaylistEffect
+	RoutePlaylistPic             = sdk.RoutePlaylistPic
 	RoutePlaylistSimilar         = sdk.RoutePlaylistSimilar
 	RoutePlaylistTags            = sdk.RoutePlaylistTags
 	RoutePlaylistTrackAll        = sdk.RoutePlaylistTrackAll
 	RoutePlaylistTrackAllNew     = sdk.RoutePlaylistTrackAllNew
 	RoutePlaylistTracksAdd       = sdk.RoutePlaylistTracksAdd
 	RoutePlaylistTracksDel       = sdk.RoutePlaylistTracksDel
+	RoutePlaylistUpdate          = sdk.RoutePlaylistUpdate
+	RoutePlaylistUpload          = sdk.RoutePlaylistUpload
 )

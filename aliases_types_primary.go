@@ -155,6 +155,8 @@ type (
 	PlaylistDetailResponse          = sdk.PlaylistDetailResponse
 	PlaylistEffectRequest           = sdk.PlaylistEffectRequest
 	PlaylistEffectResponse          = sdk.PlaylistEffectResponse
+	PlaylistPicRequest              = sdk.PlaylistPicRequest
+	PlaylistPicResponse             = sdk.PlaylistPicResponse
 	PlaylistSimilarRequest          = sdk.PlaylistSimilarRequest
 	PlaylistSimilarResponse         = sdk.PlaylistSimilarResponse
 	PlaylistTagsRequest             = sdk.PlaylistTagsRequest
@@ -167,6 +169,10 @@ type (
 	PlaylistTracksAddResponse       = sdk.PlaylistTracksAddResponse
 	PlaylistTracksDelRequest        = sdk.PlaylistTracksDelRequest
 	PlaylistTracksDelResponse       = sdk.PlaylistTracksDelResponse
+	PlaylistUpdateRequest           = sdk.PlaylistUpdateRequest
+	PlaylistUpdateResponse          = sdk.PlaylistUpdateResponse
+	PlaylistUploadRequest           = sdk.PlaylistUploadRequest
+	PlaylistUploadResponse          = sdk.PlaylistUploadResponse
 	PrivilegeLiteRequest            = sdk.PrivilegeLiteRequest
 	PrivilegeLiteResponse           = sdk.PrivilegeLiteResponse
 	RadioTrack                      = sdk.RadioTrack
